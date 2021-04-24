@@ -1,0 +1,33 @@
+<?php
+/** @var $block \Magenest\SpecialChapter1\Block\Adminhtml\AbstractDelivery */
+$address = $block->getDeliveryInfo();
+?>
+
+<?php if (($address->getData('delivery_date') || $address->getData('delivery_time') || $address->getData('comment')) &&
+    $block->isDisplayDelivery()): ?>
+    <section class="admin__page-section magenest-deliverydate">
+        <div class="admin__page-section-title">
+            <span class="title">Delivery Information</span>
+        </div>
+        <div class="admin__page-section-content">
+            <div class="admin__page-section-item" style="width: 49%;">
+                <table class="admin__table-secondary">
+                    <tbody>
+                    <tr>
+                        <td><?= __('Delivery Date') ?></td>
+                        <td style="text-align: right;"><?= $block->escapeHtml($address->getData('delivery_time')); ?></td>
+                    </tr>
+                    <tr>
+                        <td><?= __('Delivery Time Interval') ?></td>
+                        <td style="text-align: right;"><?= $block->escapeHtml($address->getData('delivery_time')); ?></td>
+                    </tr>
+                    <tr>
+                        <td><?= __('Delivery Comments') ?></td>
+                        <td style="text-align: right;"><?= $block->escapeHtml($address->getData('comment')); ?></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>

@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="magenest" translate="label" sortOrder="200">
+            <label>Magenest</label>
+        </tab>
+        <section id="delivery_config" translate="label" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Delivery Configration</label>
+            <tab>magenest</tab>
+            <resource>Magenest_SpecialChapter1::configuration</resource>
+            <group id="configuration" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Configuration</label>
+                <field id="days_not_receive" translate="label" type="multiselect" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>The days can not deliver</label>
+                    <source_model>Magenest\SpecialChapter1\Model\Source\DayCanNotDeliver</source_model>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="lead_time" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Lead time</label>
+                    <validate>required-entry validate-zero-or-greater validate-number</validate>
+                </field>
+                <field id="maximal_delivery" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Maximal Delivery Interval</label>
+                    <validate>required-entry validate-zero-or-greater validate-number</validate>
+                </field>
+                <field id="notice_by_admin" translate="label" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notice by admin</label>
+                </field>
+                <field id="date_format" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Date format</label>
+                    <validate>required-entry</validate>
+                    <source_model>Magenest\SpecialChapter1\Model\Source\DateFormat</source_model>
+                </field>
+                <field id="same_day_delivery_config" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable/Disable same day delivery</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="disable_same_day_delivery_after" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Disable same day delivery after</label>
+                    <frontend_model>Magenest\SpecialChapter1\Block\Adminhtml\Config\DeliverySameDay</frontend_model>
+                </field>
+                <field id="disable_same_day_delivery_hour" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Hidden</label>
+                    <frontend_model>Magenest\SpecialChapter1\Block\Adminhtml\Config\Hidden</frontend_model>
+                </field>
+                <field id="disable_same_day_delivery_minute" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Hidden</label>
+                    <frontend_model>Magenest\SpecialChapter1\Block\Adminhtml\Config\Hidden</frontend_model>
+                </field>
+                <field id="delivery_display_on" translate="label" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Delivery display on</label>
+                    <source_model>Magenest\SpecialChapter1\Model\Source\DisplayOn</source_model>
+                </field>
+                <field id="enable_comment_field" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable comment field</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Quote\Model\ShippingAddressManagement">
+        <plugin name="magenest_save_address_custom_attribute" type="Magenest\SpecialChapter1\Plugin\Model\ShippingAddress"/>
+    </type>
+    <type name="Magento\Quote\Model\BillingAddressManagement">
+        <plugin name="magenest_save_billing_custom_attribute" type="Magenest\SpecialChapter1\Plugin\Model\BillingAddress"/>
+    </type>
+    <type name="Magento\Sales\Block\Adminhtml\Order\Create\Data">
+        <plugin name="magenest_additional_fields" type="Magenest\SpecialChapter1\Plugin\Block\Order\Create\Shipping\Address"/>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="delivery_listing_data_source" xsi:type="string">magenest_delivery_collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="magenest_delivery_collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">magenest_delivery</argument>
+            <argument name="resourceModel" xsi:type="string">Magenest\SpecialChapter1\Model\ResourceModel\Delivery</argument>
+        </arguments>
+    </virtualType>
+</config>

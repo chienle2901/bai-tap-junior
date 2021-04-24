@@ -1,0 +1,7 @@
+.item-delivery.parent.level-0 > a:before {
+    background-image: url(../images/menu.png);
+    content: "";
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}

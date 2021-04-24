@@ -1,0 +1,10 @@
+.field {
+    margin-top: 20px;
+}
+.label {
+    margin-bottom: 8px;
+    display: block;
+}
+input[name="custom_attributes[delivery_date]"] {
+
+}

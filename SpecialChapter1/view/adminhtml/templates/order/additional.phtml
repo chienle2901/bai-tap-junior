@@ -1,0 +1,57 @@
+<?php
+/** @var $block \Magenest\SpecialChapter1\Block\Adminhtml\DefaultBlock */
+$daysCanNotDelivery = $block->getDayCanNotDelivery();
+$deliveryTimes = $block->getDeliveryTime();
+$dateFormat = $block->getDateFormat();
+?>
+<section id="order-addresses" class="admin__page-section order-addresses">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Delivery Information')) ?></span>
+    </div>
+    <div class="admin__field field">
+        <label class="label admin__field-label" for="delivery_date"><span><?= __('Delivery date') ?></span></label>
+        <div class="admin__field-control control">
+            <input id="delivery_date" class="admin__control-text required-entry required-entry _required" type="text"
+                   name="order[delivery_date]">
+        </div>
+    </div>
+    <div class="admin__field field">
+        <label class="label admin__field-label" for="delivery_time"><span><?= __('Delivery time') ?></span></label>
+        <div class="admin__field-control control">
+            <select id="delivery_time" type="text" name="order[delivery_time]"
+                    class="required-entry required-entry _required select admin__control-select">
+                <?php foreach ($deliveryTimes as $time): ?>
+                    <option value="<?= $time ?>"><?= $time ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+    <div class="admin__field field">
+        <label class="label admin__field-label"
+               for="comment"><span><?= __('Delivery comment') ?></span></label>
+        <div class="admin__field-control control">
+            <textarea id="comment" class="admin__control-textarea" name="order[delivery-comment]"></textarea>
+        </div>
+    </div>
+</section>
+<script>
+    require(["jquery", "mage/calendar"], function ($) {
+        var days = "<?= $daysCanNotDelivery ?>";
+        days = days.split(',');
+        $("#delivery_date").calendar({
+            showMonthAfterYear: false,
+            dateFormat: "<?= $dateFormat ?>",
+            changeMonth: true,
+            changeYear: true,
+            beforeShowDay: function (date) {
+                var show = true;
+                for (var i = 0; i <= days.length; i++) {
+                    if (date.getDay() == days[i]) {
+                        show = false
+                    }
+                }
+                return [show];
+            }
+        })
+    });
+</script>

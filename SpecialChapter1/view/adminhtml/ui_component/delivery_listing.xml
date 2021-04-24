@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">delivery_listing.delivery_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="new">
+                <url path="*/*/edit"/>
+                <class>primary</class>
+                <label translate="true">Add New Delivery Time</label>
+            </button>
+        </buttons>
+        <spinner>delivery_listing_columns</spinner>
+        <deps>
+            <dep>delivery_listing.delivery_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="delivery_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <updateUrl path="mui/index/render"/>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">id</param>
+            </storageConfig>
+        </settings>
+        <aclResource>Magenest_SpecialChapter1::manager</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="delivery_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+        <massaction name="listing_massaction">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/tree-massactions</item>
+                </item>
+            </argument>
+            <action name="delete">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">delete</item>
+                        <item name="label" xsi:type="string" translate="true">Delete</item>
+                        <item name="url" xsi:type="url" path="*/*/delete"/>
+                        <item name="confirm" xsi:type="array">
+                            <item name="title" xsi:type="string" translate="true">Delete Row</item>
+                            <item name="message" xsi:type="string" translate="true">Are you sure you wan't to delete selected items?</item>
+                        </item>
+                    </item>
+                </argument>
+            </action>
+        </massaction>
+    </listingToolbar>
+    <columns name="delivery_listing_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="id">
+            <settings>
+                <label translate="true">ID</label>
+                <filter>text</filter>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="store_id" class="Magenest\SpecialChapter1\Ui\Form\StoreViews">
+            <settings>
+                <label translate="true">Store Views</label>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <filter>false</filter>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="customer_group" class="Magenest\SpecialChapter1\Ui\Form\CustomerGroup">
+            <settings>
+                <label translate="true">Customer Group</label>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <filter>false</filter>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="delivery_time" class="Magenest\SpecialChapter1\Ui\Form\DeliveryTime">
+            <settings>
+                <label translate="true">Delivery Time</label>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <filter>false</filter>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Magenest\SpecialChapter1\Ui\Component\Listing\Grid\Column\Action">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="resizeEnabled" xsi:type="boolean">false</item>
+                    <item name="resizeDefaultWidth" xsi:type="string">107</item>
+                    <item name="indexField" xsi:type="string">id</item>
+                </item>
+            </argument>
+        </actionsColumn>
+    </columns>
+</listing>

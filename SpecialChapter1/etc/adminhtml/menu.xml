@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add
+            id="Magenest_SpecialChapter1::delivery"
+            title="Magenest Delivery"
+            module="Magenest_SpecialChapter1"
+            sortOrder="50"
+            resource="Magenest_SpecialChapter1::menu"
+            translate="title"
+        />
+        <add
+            id="Magenest_SpecialChapter1::manager"
+            translate="title"
+            title="Delivery Time Manager"
+            module="Magenest_SpecialChapter1"
+            sortOrder="10"
+            parent="Magenest_SpecialChapter1::delivery"
+            resource="Magenest_SpecialChapter1::manager"
+            action="delivery/deliverytime/index"
+        />
+        <add
+            id="Magenest_SpecialChapter1::configuration"
+            translate="title"
+            title="Configuration"
+            module="Magenest_SpecialChapter1"
+            sortOrder="20"
+            parent="Magenest_SpecialChapter1::delivery"
+            resource="Magenest_SpecialChapter1::configuration"
+            action="admin/system_config/edit/section/delivery_config"
+        />
+    </menu>
+</config>
