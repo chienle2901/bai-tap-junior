@@ -2,16 +2,21 @@
 
 namespace Magenest\PageRedirect\Plugin;
 
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\Router\DefaultRouter;
 use Magento\Framework\App\RequestInterface;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollection;
+use Magento\Framework\Message\MessageInterface;
+use Magento\Framework\Translate\Inline\ParserInterface;
+use Magento\Framework\Translate\InlineInterface;
 use Magento\Search\Model\ResourceModel\Query\CollectionFactory as SearchCollection;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\ActionFactory;
 use Magento\UrlRewrite\Model\ResourceModel\UrlRewriteCollectionFactory;
+use Magento\Theme\Controller\Result\MessagePlugin;
 
 /**
  * Class RouterRedirect
@@ -54,6 +59,16 @@ class RouterRedirect
      */
     protected $actionFactory;
 
+    protected $inlineTranslate;
+
+    protected $cookieMetadataFactory;
+
+    protected $cookieManager;
+
+    protected $serializer;
+
+    protected $interpretationStrategy;
+
     /**
      * @var UrlRewriteCollectionFactory
      */
@@ -69,6 +84,11 @@ class RouterRedirect
      * @param ProductCollection $productCollection
      * @param StoreManagerInterface $storeManager
      * @param CollectionFactory $collectionFactory
+     * @param \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager
+     * @param \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory $cookieMetadataFactory
+     * @param \Magento\Framework\View\Element\Message\InterpretationStrategyInterface $interpretationStrategy
+     * @param \Magento\Framework\Serialize\Serializer\Json|null $serializer
+     * @param InlineInterface|null $inlineTranslate
      */
     public function __construct(
         UrlRewriteCollectionFactory $urlRewriteCollectionFactory,
@@ -78,8 +98,19 @@ class RouterRedirect
         SearchCollection $searchCollection,
         ProductCollection $productCollection,
         StoreManagerInterface $storeManager,
-        CollectionFactory $collectionFactory
+        CollectionFactory $collectionFactory,
+        \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager,
+        \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory $cookieMetadataFactory,
+        \Magento\Framework\View\Element\Message\InterpretationStrategyInterface $interpretationStrategy,
+        \Magento\Framework\Serialize\Serializer\Json $serializer = null,
+        InlineInterface $inlineTranslate = null
     ) {
+        $this->cookieManager = $cookieManager;
+        $this->cookieMetadataFactory = $cookieMetadataFactory;
+        $this->interpretationStrategy = $interpretationStrategy;
+        $this->serializer = $serializer ?: ObjectManager::getInstance()
+            ->get(\Magento\Framework\Serialize\Serializer\Json::class);
+        $this->inlineTranslate = $inlineTranslate ?: ObjectManager::getInstance()->get(InlineInterface::class);
         $this->urlRewriteCollectionFactory = $urlRewriteCollectionFactory;
         $this->actionFactory = $actionFactory;
         $this->response = $response;
@@ -107,7 +138,8 @@ class RouterRedirect
                     ->setParams(['id' => $category->getId()]);
                 $requestPath = $this->getRequestPath('category', $category->getId());
                 $this->response->setRedirect($requestPath);
-                $this->messageManager->addNoticeMessage(__('The path %1 does not exists. Are you looking for %2', $request->getPathInfo(), $category->getName()));
+                $this->messageManager->addNoticeMessage(__('The path %1 does not exists. Are you looking for %2 ?', $request->getPathInfo(), $category->getName()));
+                $this->setCookie($this->getMessages());
                 return $this->actionFactory->create(\Magento\Framework\App\Action\Redirect::class);
             }
             $searchTerm = $this->findSearchTerm(urldecode($singlePath));
@@ -191,5 +223,78 @@ class RouterRedirect
             $requestPath = 'catalog/' . $type . '/view/id/' . $id;
         }
         return $requestPath;
+    }
+
+    protected function setCookie(array $messages)
+    {
+        if (!empty($messages)) {
+            if ($this->inlineTranslate->isAllowed()) {
+                foreach ($messages as &$message) {
+                    $message['text'] = $this->convertMessageText($message['text']);
+                }
+            }
+
+            $publicCookieMetadata = $this->cookieMetadataFactory->createPublicCookieMetadata();
+            $publicCookieMetadata->setDurationOneYear();
+            $publicCookieMetadata->setPath('/');
+            $publicCookieMetadata->setHttpOnly(false);
+
+            $this->cookieManager->setPublicCookie(
+                MessagePlugin::MESSAGES_COOKIES_NAME,
+                $this->serializer->serialize($messages),
+                $publicCookieMetadata
+            );
+        }
+    }
+
+    /**
+     * Replace wrapping translation with html body.
+     *
+     * @param string $text
+     * @return string
+     */
+    private function convertMessageText(string $text): string
+    {
+        if (preg_match('#' . ParserInterface::REGEXP_TOKEN . '#', $text, $matches)) {
+            $text = $matches[1];
+        }
+
+        return $text;
+    }
+
+    /**
+     * Return messages array and clean message manager messages
+     *
+     * @return array
+     */
+    protected function getMessages()
+    {
+        $messages = $this->getCookiesMessages();
+        /** @var MessageInterface $message */
+        foreach ($this->messageManager->getMessages(true)->getItems() as $message) {
+            $messages[] = [
+                'type' => $message->getType(),
+                'text' => $this->interpretationStrategy->interpret($message),
+            ];
+        }
+        return $messages;
+    }
+
+    /**
+     * Return messages stored in cookies
+     *
+     * @return array
+     */
+    protected function getCookiesMessages()
+    {
+        $messages = $this->cookieManager->getCookie(MessagePlugin::MESSAGES_COOKIES_NAME);
+        if (!$messages) {
+            return [];
+        }
+        $messages = $this->serializer->unserialize($messages);
+        if (!is_array($messages)) {
+            $messages = [];
+        }
+        return $messages;
     }
 }
